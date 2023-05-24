@@ -1,14 +1,42 @@
 const botao = document.getElementById('botao');
-const input = document.getElementById('todos');
+const input = document.getElementById('CadastroBairro');
 const divItens = document.getElementById('divItens');
 
 let itens = [];
 getLocalStorage();
 
 botao.addEventListener('click', () => {
-  if (input.value) {
-    itens.push(input.value);
+  const nombreUsuario = prompt('Digite um nome para armazenar o seu endeço:');
+  if (!nombreUsuario) {
+    alert('Você deve fornecer um nome para armazenar o seu endereço');
+    return;
   }
+
+  const ciudad = document.getElementById('floatingSelect').value;
+  const bairro = document.getElementById('CadastroBairro').value;
+  const rua = document.getElementById('CadastroRua').value;
+  const numeroCasa = document.getElementById('CadastroNumeroCasa').value;
+  const pontoReferencia = document.getElementById('CadastroPontoReferencia').value;
+  const cep = document.getElementById('CadastroCEP').value;
+  const objetivo = document.getElementById('floatingTextarea2').value;
+  
+  if (ciudad === "seleccione a ciudad donde mora" || bairro === "" || rua === "" || numeroCasa === "" || pontoReferencia === "" || cep === "" || objetivo === "") {
+    alert("Por favor, complete todos los campos antes de enviar el formulario.");
+    return;
+  }
+  
+  const formulario = {
+    nombreUsuario,
+    ciudad,
+    bairro,
+    rua,
+    numeroCasa,
+    pontoReferencia,
+    cep,
+    objetivo
+  };
+
+  itens.push(formulario);
   adicionarItens();
   addLocalStorage();
 });
@@ -22,9 +50,9 @@ function adicionarItens() {
       <div class="col-12">
         <div class="card">
           <div class="card-body">
-            ${i} - ${item}
-            <button id="estado-btn-${i}" class="btn btn-primary btn-sm" onclick="cambiarEstado(${i})">Concluido</button>
-            <button class="btn btn-primary btn-sm" onclick="editar(${i})">Editar</button>
+            ${i} - ${item.nombreUsuario}
+              <button id="estado-btn-${i}" class="btn btn-primary btn-sm" onclick="cambiarEstado(${i})">Concluido</button>
+              <button class="btn btn-primary btn-sm" onclick="editar(${i})">Editar</button>
           </div>
         </div>
       </div>
@@ -45,23 +73,51 @@ function cambiarEstado(index) {
   }
 }
 
+
 function editar(index) {
-  // Lógica para la función editar
-}
+  const formulario = itens[index]; 
 
+  document.getElementById('floatingSelect').value = formulario.ciudad;
+  document.getElementById('CadastroBairro').value = formulario.bairro;
+  document.getElementById('CadastroRua').value = formulario.rua;
+  document.getElementById('CadastroNumeroCasa').value = formulario.numeroCasa;
+  document.getElementById('CadastroPontoReferencia').value = formulario.pontoReferencia;
+  document.getElementById('CadastroCEP').value = formulario.cep;
+  document.getElementById('floatingTextarea2').value = formulario.objetivo;
 
-function cambiarEstado(index) {
-  var btn = document.getElementById(`estado-btn-${index}`);
+  const formularioEditado = obtenerDatosFormulario(); 
   
-  if (btn.innerHTML === 'Concluido') {
-    btn.innerHTML = 'Pendiente';
-    btn.style.backgroundColor = 'red';
-  } else {
-    btn.innerHTML = 'Concluido';
-    btn.style.backgroundColor = 'green';
-  }
+    itens[index].ciudad = formularioEditado.ciudad;
+    itens[index].bairro = formularioEditado.bairro;
+    itens[index].rua = formularioEditado.rua;
+    itens[index].numeroCasa = formularioEditado.numeroCasa;
+    itens[index].pontoReferencia = formularioEditado.pontoReferencia;
+    itens[index].cep = formularioEditado.cep;
+    itens[index].objetivo = formularioEditado.objetivo;
+
+  adicionarItens();
+  addLocalStorage();
 }
 
+function obtenerDatosFormulario() {
+  const ciudad = document.getElementById('floatingSelect').value;
+  const bairro = document.getElementById('CadastroBairro').value;
+  const rua = document.getElementById('CadastroRua').value;
+  const numeroCasa = document.getElementById('CadastroNumeroCasa').value;
+  const pontoReferencia = document.getElementById('CadastroPontoReferencia').value;
+  const cep = document.getElementById('CadastroCEP').value;
+  const objetivo = document.getElementById('floatingTextarea2').value;
+
+  return {
+    ciudad,
+    bairro,
+    rua,
+    numeroCasa,
+    pontoReferencia,
+    cep,
+    objetivo
+  };
+}
 
 function addLocalStorage() {
   localStorage.setItem('itens', JSON.stringify(itens));
@@ -83,11 +139,12 @@ function excluir() {
   addLocalStorage();
 }
 
-function editar(index) {
-  const novaInfo = prompt('novaInfo:');
-  if (novaInfo) {
-    itens[index] = novaInfo;
-    adicionarItens();
-    addLocalStorage();
-  }
+function vaciar() {
+  input.value = '';
+  document.getElementById('floatingSelect').selectedIndex = 0;
+  document.getElementById('CadastroRua').value = '';
+  document.getElementById('CadastroNumeroCasa').value = '';
+  document.getElementById('CadastroPontoReferencia').value = '';
+  document.getElementById('CadastroCEP').value = '';
+  document.getElementById('floatingTextarea2').value = '';
 }
